@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Macphalen L. Oduor | Data Engineer</title>
+    <meta name="description" content="Portfolio of Macphalen L. Oduor, a Nairobi-based data engineer building streaming, orchestration and warehousing pipelines." />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <!-- Lucide Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.577.0/dist/umd/lucide.min.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        verdigris: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            200: '#99f6e4',
+                            300: '#5eead4',
+                            400: '#2dd4bf', // Brand Primary (Dark Mode)
+                            500: '#14b8a6',
+                            600: '#0d9488', // Brand Primary (Light Mode Backgrounds)
+                            700: '#0f766e', // Brand Primary (Light Mode Text - Darker for contrast)
+                            800: '#115e59',
+                            900: '#134e4a',
+                            950: '#042f2e',
+                        },
+                        cyan: {
+                            400: '#22d3ee',
+                            500: '#06b6d4',
+                        },
+                        slate: {
+                            850: '#151e2e',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Chakra Petch"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'slide-up': 'slideUp 0.6s ease-out forwards',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 12s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'blink': 'blink 1s step-end infinite',
+                        'scan': 'scan 4s linear infinite',
+                        'hologram': 'hologram 3s linear infinite',
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideUp: { '0%': { opacity: '0', transform: 'translateY(30px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
+                        blink: { '0%, 100%': { opacity: '1' }, '50%': { opacity: '0' } },
+                        scan: { '0%': { top: '-20%' }, '100%': { top: '120%' } },
+                        hologram: { '0%': { backgroundPosition: '0% 50%' }, '100%': { backgroundPosition: '100% 50%' } }
+                    },
+                    backgroundSize: {
+                        '300%': '300%',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root { box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+        html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+        #navbar { top: calc(1rem + env(safe-area-inset-top, 0px)); }
+        html {
+            scroll-behavior: smooth;
+        }
+
+        :root {
+            --grid-color: rgba(15, 118, 110, 0.12);
+            --scan-color: rgba(0, 0, 0, 0.05);
+            --hud-bg: rgba(255, 255, 255, 0.7);
+            --hud-border: rgba(13, 148, 136, 0.4);
+        }
+
+        .dark {
+            --grid-color: rgba(34, 211, 238, 0.08);
+            --scan-color: rgba(255, 255, 255, 0.03);
+            --hud-bg: rgba(15, 23, 42, 0.6);
+            --hud-border: rgba(45, 212, 191, 0.2);
+        }
+
+        body {
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #cbd5e1;
+        }
+
+        .dark ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #0f766e;
+            border-radius: 3px;
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background: #115e59;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #115e59;
+        }
+
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #2dd4bf;
+        }
+
+        /* Nav Pills Animation */
+        .nav-pill {
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-pill.active {
+            background-color: rgba(13, 148, 136, 0.1);
+            color: #0f766e;
+        }
+
+        .dark .nav-pill.active {
+            background-color: rgba(45, 212, 191, 0.1);
+            color: #2dd4bf;
+        }
+
+        .tech-grid {
+            background-size: 60px 60px;
+            background-image: linear-gradient(to right, var(--grid-color) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+            mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+            -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+            pointer-events: none;
+            transition: background-image 0.3s;
+        }
+
+        .crt-overlay {
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, var(--scan-color) 50%), linear-gradient(90deg, rgba(0, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+        }
+
+        html:not(.dark) .crt-overlay {
+            opacity: 0.4;
+            mix-blend-mode: multiply;
+        }
+
+        .typing-cursor::after {
+            content: '▋';
+            animation: blink 1s step-end infinite;
+            color: #0f766e;
+            margin-left: 4px;
+        }
+
+        .dark .typing-cursor::after {
+            color: #2dd4bf;
+        }
+
+        .hud-border {
+            position: relative;
+            border: 1px solid var(--hud-border);
+            background: var(--hud-bg);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+
+        .dark .hud-border {
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .hud-corner {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-color: #0d9488;
+            border-style: solid;
+            transition: all 0.3s ease;
+        }
+
+        .dark .hud-corner {
+            border-color: #2dd4bf;
+        }
+
+        .hud-border:hover .hud-corner {
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background: #0d9488;
+        }
+
+        .dark .hud-border:hover .hud-corner {
+            background: #2dd4bf;
+        }
+
+        .hc-tl {
+            top: -1px;
+            left: -1px;
+            border-width: 2px 0 0 2px;
+        }
+
+        .hc-tr {
+            top: -1px;
+            right: -1px;
+            border-width: 2px 2px 0 0;
+        }
+
+        .hc-bl {
+            bottom: -1px;
+            left: -1px;
+            border-width: 0 0 2px 2px;
+        }
+
+        .hc-br {
+            bottom: -1px;
+            right: -1px;
+            border-width: 0 2px 2px 0;
+        }
+
+        .holo-border {
+            position: relative;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .holo-border::before {
+            content: '';
+            position: absolute;
+            z-index: -2;
+            left: -50%;
+            top: -50%;
+            width: 200%;
+            height: 200%;
+            background-color: transparent;
+            background-repeat: no-repeat;
+            background-position: 0 0;
+            background-image: conic-gradient(transparent, rgba(13, 148, 136, 0.2), transparent 30%);
+            animation: rotate 4s linear infinite;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .dark .holo-border::before {
+            background-image: conic-gradient(transparent, rgba(45, 212, 191, 0.3), transparent 30%);
+        }
+
+        .holo-border:hover::before {
+            opacity: 1;
+        }
+
+        /* Navbar Scrolled State */
+        #navbar.scrolled {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-color: rgba(203, 213, 225, 0.8);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark #navbar.scrolled {
+            background-color: rgba(2, 6, 23, 0.9);
+            border-color: rgba(30, 41, 59, 0.8);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+        }
+
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+
+            .no-print,
+            nav,
+            #bgCanvas,
+            .tech-grid,
+            #loader,
+            .fixed-bg,
+            .crt-overlay,
+            #systemLog {
+                display: none !important;
+            }
+
+            #resume {
+                padding: 0;
+                background: white;
+            }
+
+            .hud-border {
+                border: none;
+                background: none;
+                box-shadow: none;
+                color: black;
+                padding: 0;
+            }
+
+            .text-slate-100,
+            .text-slate-200,
+            .text-slate-300,
+            .text-slate-400 {
+                color: black !important;
+            }
+
+            .text-verdigris-400,
+            .text-verdigris-500,
+            .text-verdigris-600,
+            .text-verdigris-700 {
+                color: #000 !important;
+                font-weight: bold;
+            }
+
+            .bg-slate-900,
+            .bg-slate-950,
+            .bg-white,
+            .bg-slate-50,
+            .bg-slate-100,
+            .bg-slate-200 {
+                background: white !important;
+                border: 1px solid #eee;
+            }
+
+            a {
+                text-decoration: none;
+                color: black;
+            }
+        }
+    </style>
+    <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.1",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.556.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.1/"
+  }
+}
+</script>
+</head>
+
+<body
+    class="antialiased font-sans bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-e2e8f0 relative min-h-screen flex flex-col selection:bg-verdigris-500/30 selection:text-verdigris-800 dark:selection:text-verdigris-200 transition-colors duration-300">
+
+    <!-- CRT Overlay -->
+    <div class="fixed inset-0 z-[60] crt-overlay pointer-events-none w-full h-full"></div>
+
+    <!-- Initial Boot Loader -->
+    <div id="loader"
+        class="fixed inset-0 z-[9999] bg-slate-100 dark:bg-slate-950 flex flex-col items-center justify-center gap-6">
+        <div class="relative w-32 h-32">
+            <div
+                class="absolute inset-0 border-t-2 border-verdigris-700 dark:border-verdigris-500 rounded-full animate-spin">
+            </div>
+            <div
+                class="absolute inset-4 border-b-2 border-cyan-600 dark:border-cyan-400 rounded-full animate-spin-slow">
+            </div>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <span class="font-mono text-2xl font-bold text-verdigris-700 dark:text-verdigris-500 animate-pulse"
+                    id="loaderProgress">0%</span>
+            </div>
+        </div>
+        <div class="flex flex-col items-center">
+            <span
+                class="font-mono text-sm text-verdigris-700 dark:text-verdigris-400 tracking-[0.3em] uppercase mb-2">Booting
+                Portfolio</span>
+            <span class="font-mono text-[10px] text-slate-500 dark:text-slate-600" id="loaderText">Mounting data
+                volumes...</span>
+        </div>
+    </div>
+
+    <!-- System Log Tracker -->
+    <div id="systemLog"
+        class="fixed bottom-6 left-6 z-40 hidden md:flex flex-col gap-1 font-mono text-[10px] text-verdigris-800/80 dark:text-verdigris-400/80 pointer-events-none select-none drop-shadow-md">
+    </div>
+
+    <!-- Background Layers -->
+    <div class="fixed inset-0 w-full h-full -z-20 tech-grid"></div>
+    <canvas id="bgCanvas" class="fixed inset-0 w-full h-full -z-10 opacity-40 pointer-events-none"></canvas>
+
+    <!-- Modern Floating Navigation -->
+    <nav id="navbar"
+        class="fixed top-4 left-0 right-0 mx-auto w-[95%] max-w-5xl z-50 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-lg shadow-slate-200/50 dark:shadow-black/40 transition-all duration-300 flex items-center justify-between px-6 py-3 dark:hover:border-verdigris-500/30">
+
+        <!-- Logo Area -->
+        <a href="#home" onclick="smoothScroll(event, 'home')" class="flex items-center gap-2 group">
+            <div
+                class="relative flex items-center justify-center w-8 h-8 rounded bg-slate-100 dark:bg-slate-800 text-verdigris-700 dark:text-verdigris-400 border border-slate-300 dark:border-slate-700 group-hover:border-verdigris-500 transition-colors">
+                <i data-lucide="terminal" class="w-4 h-4"></i>
+            </div>
+            <div class="flex flex-col leading-none">
+                <span
+                    class="text-sm font-bold tracking-wider text-slate-800 dark:text-slate-100 group-hover:text-verdigris-700 dark:group-hover:text-verdigris-400 transition-colors">MAC<span
+                        class="text-verdigris-600 dark:text-verdigris-500">.DATA</span></span>
+                <span class="text-[8px] font-mono text-slate-400 dark:text-slate-500 uppercase">System_Online</span>
+            </div>
+        </a>
+
+        <!-- Desktop Links (Pills) -->
+        <div
+            class="hidden md:flex items-center gap-1 bg-slate-100/50 dark:bg-slate-950/50 p-1 rounded-full border border-slate-200/50 dark:border-slate-800/50">
+            <a href="#home"
+                class="nav-pill px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition-all"
+                data-target="home" onclick="smoothScroll(event, 'home')">Home</a>
+            <a href="#projects"
+                class="nav-pill px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition-all"
+                data-target="projects" onclick="smoothScroll(event, 'projects')">Projects</a>
+            <a href="#about"
+                class="nav-pill px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition-all"
+                data-target="about" onclick="smoothScroll(event, 'about')">About</a>
+            <a href="#resume"
+                class="nav-pill px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition-all"
+                data-target="resume" onclick="smoothScroll(event, 'resume')">Resume</a>
+            <a href="#blog"
+                class="nav-pill px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition-all"
+                data-target="blog" onclick="smoothScroll(event, 'blog')">Blog</a>
+            <a href="#contact"
+                class="nav-pill px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 transition-all"
+                data-target="contact" onclick="smoothScroll(event, 'contact')">Contact</a>
+        </div>
+
+        <!-- Right Controls -->
+        <div class="flex items-center gap-3">
+            <!-- Theme Toggle -->
+            <button id="themeToggle" onclick="toggleTheme()"
+                class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-verdigris-400 hover:bg-verdigris-100 dark:hover:bg-slate-700 transition-colors border border-transparent hover:border-verdigris-200 dark:hover:border-verdigris-900">
+                <i data-lucide="moon" class="w-4 h-4 hidden dark:block"></i>
+                <i data-lucide="sun" class="w-4 h-4 block dark:hidden text-amber-500"></i>
+            </button>
+
+            <!-- Mobile Menu Toggle -->
+            <button id="mobileMenuBtn"
+                class="md:hidden p-2 text-slate-600 dark:text-slate-300 hover:text-verdigris-600 dark:hover:text-verdigris-400 transition-colors">
+                <i data-lucide="menu" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenu"
+        class="fixed inset-0 z-[100] bg-slate-100/98 dark:bg-slate-950/98 backdrop-blur-xl flex flex-col justify-center items-center transition-all duration-300 opacity-0 pointer-events-none invisible overflow-hidden">
+        <div class="absolute inset-0 tech-grid opacity-20"></div>
+        <button id="closeMenuBtn"
+            class="absolute top-6 right-6 text-slate-600 dark:text-slate-400 hover:text-verdigris-700 dark:hover:text-verdigris-400 border border-slate-300 dark:border-slate-800 hover:border-verdigris-500 p-2 rounded bg-white/80 dark:bg-slate-900/80 transition-colors z-20">
+            <i data-lucide="x" class="w-8 h-8"></i>
+        </button>
+        <div class="w-full max-w-sm px-6 relative z-10 flex flex-col gap-6" id="mobileNavLinks">
+            <!-- Injected via JS -->
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        <!-- SECTION: HERO -->
+        <section id="home"
+            class="scroll-mt-24 min-h-screen flex flex-col justify-center px-6 md:px-12 relative pt-28 pb-20 overflow-hidden">
+            <div class="max-w-7xl mx-auto w-full z-10 grid lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+                <!-- Left Column: Profile -->
+                <div class="order-2 lg:order-1 relative flex flex-col items-center lg:items-start">
+                    <div class="relative group mb-10 mx-auto lg:mx-0">
+                        <div class="relative w-72 h-72 md:w-80 md:h-80">
+                            <div
+                                class="absolute -inset-6 border border-verdigris-500/20 rounded-full animate-spin-slow border-dashed opacity-50">
+                            </div>
+                            <div
+                                class="absolute -inset-2 border border-cyan-600/10 dark:border-cyan-500/10 rounded-full animate-[spin_20s_linear_infinite_reverse]">
+                            </div>
+                            <div
+                                class="absolute inset-0 bg-verdigris-500 rounded-full blur-3xl opacity-10 group-hover:opacity-30 transition-opacity duration-700">
+                            </div>
+                            <div
+                                class="relative w-full h-full rounded-full p-1 bg-gradient-to-br from-slate-200 dark:from-slate-800 to-white dark:to-slate-950 backdrop-blur-sm overflow-hidden border border-verdigris-600/30 dark:border-verdigris-500/30 group-hover:border-verdigris-500 transition-colors shadow-2xl">
+                                <img src="data:image/jpeg;base64,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" alt="Portrait of Macphalen Oduor"
+                                    class="w-full h-full object-cover object-top filter grayscale contrast-125 hover:grayscale-0 transition-all duration-700 hover:scale-105" />
+                                <div
+                                    class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-200 dark:from-slate-900 via-slate-200/80 dark:via-slate-900/80 to-transparent p-6 pt-12 flex flex-col items-center">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <div
+                                            class="w-2 h-2 rounded-full bg-verdigris-700 dark:bg-verdigris-500 animate-pulse">
+                                        </div>
+                                        <span
+                                            class="text-[10px] font-mono text-verdigris-700 dark:text-verdigris-400 tracking-widest uppercase font-bold">System_Online</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Live Metrics Dashboard -->
+                    <div
+                        class="w-full max-w-sm bg-white/60 dark:bg-slate-900/60 border border-slate-300 dark:border-slate-700 p-5 rounded backdrop-blur-md relative overflow-hidden group shadow-lg dark:shadow-none">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-verdigris-500"></div>
+                        <div
+                            class="flex justify-between items-center mb-4 border-b border-slate-300 dark:border-slate-700 pb-2">
+                            <span
+                                class="text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                <i data-lucide="activity"
+                                    class="w-3 h-3 text-verdigris-700 dark:text-verdigris-500"></i> Live_Telemetry
+                            </span>
+                            <span class="text-[10px] font-mono text-verdigris-700 dark:text-verdigris-500">github</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 text-center">
+                            <div>
+                                <div class="text-[9px] text-slate-500 uppercase mb-1 font-mono">Repos</div>
+                                <div class="text-lg font-bold text-slate-900 dark:text-white font-mono">26</div>
+                            </div>
+                            <div>
+                                <div class="text-[9px] text-slate-500 uppercase mb-1 font-mono">Pipelines</div>
+                                <div
+                                    class="text-lg font-bold text-slate-900 dark:text-white font-mono flex justify-center items-center gap-1">
+                                    6</div>
+                            </div>
+                            <div>
+                                <div class="text-[9px] text-slate-500 uppercase mb-1 font-mono">Base</div>
+                                <div class="text-lg font-bold text-verdigris-700 dark:text-verdigris-400 font-mono">
+                                    NBO</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Headline & Bio -->
+                <div class="order-1 lg:order-2 text-center lg:text-left">
+                    <div
+                        class="inline-flex items-center gap-2 px-3 py-1 rounded-sm bg-verdigris-500/10 border border-verdigris-600/20 dark:border-verdigris-500/20 mb-6">
+                        <span class="font-mono text-verdigris-700 dark:text-verdigris-400 text-xs tracking-wider">>
+                            INITIALIZING_PORTFOLIO_MODULE...</span>
+                    </div>
+
+                    <h1
+                        class="text-5xl md:text-7xl lg:text-8xl font-bold text-slate-900 dark:text-slate-100 mb-6 leading-[0.9] tracking-tighter">
+                        Data <br />
+                        <span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-verdigris-700 dark:from-verdigris-400 via-cyan-600 dark:via-cyan-400 to-verdigris-700 dark:to-verdigris-400 bg-300% animate-hologram">Engineer</span>
+                    </h1>
+
+                    <div class="h-8 mb-8 flex items-center justify-center lg:justify-start">
+                        <span
+                            class="text-xl md:text-2xl text-slate-500 dark:text-slate-400 font-light font-mono text-left">
+                            <span class="text-verdigris-700 dark:text-verdigris-500 mr-2">$</span><span id="typingText"
+                                class="typing-cursor"></span>
+                        </span>
+                    </div>
+
+                    <p
+                        class="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mb-10 leading-relaxed mx-auto lg:mx-0 font-light">
+                        Nairobi-based data engineer and <strong>JKUAT</strong> graduate. I architect heavy-duty <strong>data infrastructure</strong>, from massive stream processing to bulletproof <strong>data governance</strong>, turning raw data chaos into trusted assets.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start">
+                        <a href="#projects" onclick="smoothScroll(event, 'projects')"
+                            class="bg-verdigris-700 hover:bg-verdigris-800 dark:bg-verdigris-600 dark:hover:bg-verdigris-500 text-slate-50 dark:text-slate-950 font-bold py-4 px-8 skew-x-[-10deg] transition-all flex items-center justify-center gap-3 group shadow-[0_0_20px_rgba(45,212,191,0.3)] hover:shadow-[0_0_30px_rgba(45,212,191,0.5)]">
+                            <span class="skew-x-[10deg] flex items-center gap-2 uppercase tracking-wider text-sm">
+                                View Projects <i data-lucide="chevron-right"
+                                    class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                            </span>
+                        </a>
+                        <a href="#resume" onclick="smoothScroll(event, 'resume')"
+                            class="border border-slate-300 dark:border-slate-700 hover:border-verdigris-600 dark:hover:border-verdigris-400 text-slate-700 dark:text-slate-300 hover:text-verdigris-800 dark:hover:text-white font-bold py-4 px-8 skew-x-[-10deg] transition-all flex items-center justify-center gap-3 group bg-white/50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800">
+                            <span class="skew-x-[10deg] flex items-center gap-2 uppercase tracking-wider text-sm">
+                                <i data-lucide="file-code"
+                                    class="w-4 h-4 text-verdigris-700 dark:text-verdigris-500"></i> Access Resume
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="mt-20 border-t border-slate-300 dark:border-slate-800/50 pt-8 reveal max-w-7xl mx-auto w-full px-6">
+                <div class="flex items-center gap-4 mb-6">
+                    <span class="w-2 h-2 bg-verdigris-700 dark:bg-verdigris-500 rounded-full"></span>
+                    <p class="text-xs text-verdigris-700 dark:text-verdigris-500 uppercase tracking-[0.2em] font-mono">
+                        Infrastructure_Stack_Loaded</p>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm" id="techStackContainer"></div>
+            </div>
+        </section>
+
+        <!-- SECTION: PROJECTS -->
+        <section id="projects"
+            class="scroll-mt-24 min-h-screen px-6 md:px-12 py-24 border-t border-slate-300 dark:border-slate-900 bg-slate-200 dark:bg-slate-950 relative transition-colors duration-300">
+            <div class="max-w-7xl mx-auto relative z-10">
+                <div class="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-8 reveal">
+                    <div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <div
+                                class="p-2 bg-verdigris-900/10 dark:bg-verdigris-900/20 border border-verdigris-600/30 dark:border-verdigris-500/30 rounded">
+                                <i data-lucide="folder-git-2"
+                                    class="text-verdigris-700 dark:text-verdigris-500 w-6 h-6"></i>
+                            </div>
+                            <h2
+                                class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+                                Projects_Hub</h2>
+                        </div>
+                        <p
+                            class="text-slate-500 dark:text-slate-400 max-w-lg font-mono text-sm mt-4 pl-1 border-l-2 border-verdigris-500/50">
+                            > SELECT * FROM deployments WHERE status = 'SUCCESS'</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2" id="filterContainer"></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="projectsGrid"></div>
+            </div>
+        </section>
+
+        <!-- SECTION: ABOUT -->
+        <section id="about"
+            class="scroll-mt-24 min-h-screen px-6 md:px-12 py-24 bg-gradient-to-b from-slate-100 dark:from-slate-950 to-slate-200 dark:to-slate-900 relative transition-colors duration-300">
+            
+            <div class="max-w-7xl mx-auto relative z-10">
+                <div
+                    class="mb-16 reveal flex flex-col md:flex-row items-end justify-between border-b border-slate-300 dark:border-slate-800/60 pb-6 gap-6">
+                    <div>
+                        <span
+                            class="text-verdigris-700 dark:text-verdigris-500 font-mono text-xs tracking-[0.3em] mb-2 block animate-pulse">System_Identity
+                            // 0x3F2</span>
+                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white tracking-tight">
+                            Operator <span
+                                class="text-transparent bg-clip-text bg-gradient-to-r from-verdigris-700 dark:from-verdigris-400 to-cyan-600 dark:to-cyan-400">Profile</span>
+                        </h2>
+                    </div>
+                    <div class="flex gap-4 font-mono text-xs text-slate-500">
+                        <div
+                            class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 px-3 py-1 rounded flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Status: ACTIVE
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 reveal">
+                    <div class="lg:col-span-7 flex flex-col gap-6">
+                        <div class="hud-border bg-white/40 dark:bg-slate-900/40 backdrop-blur-md p-1 group">
+                            <div class="hud-corner hc-tl"></div>
+                            <div class="hud-corner hc-tr"></div>
+                            <div class="hud-corner hc-bl"></div>
+                            <div class="hud-corner hc-br"></div>
+                            <div
+                                class="bg-slate-50/80 dark:bg-slate-950/80 p-2 flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
+                                <div class="flex gap-1.5">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-700"></div>
+                                    <div class="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-700"></div>
+                                    <div class="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-700"></div>
+                                </div>
+                                <span class="text-[10px] font-mono text-slate-500">bio.txt - read-only</span>
+                            </div>
+                            <div
+                                class="p-6 md:p-8 font-mono text-sm leading-relaxed text-slate-700 dark:text-slate-300 relative overflow-hidden">
+                                <div
+                                    class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-verdigris-500/20 to-transparent animate-scan">
+                                </div>
+                                <p class="mb-4"><span class="text-verdigris-700 dark:text-verdigris-500">>></span> A
+                                    proud graduate of <span
+                                        class="text-slate-900 dark:text-white bg-verdigris-500/10 px-1 border border-verdigris-600/20 dark:border-verdigris-500/20">Jomo
+                                        Kenyatta University of Agriculture and Technology (JKUAT)</span> with a B.Sc. in
+                                    Business Computing.</p>
+                                <p class="mb-4"><span class="text-verdigris-700 dark:text-verdigris-500">>></span> I’m endlessly curious about the data space. My journey began in analytics, and I quickly realized that the real power lies in the infrastructure that delivers the insights.</p>
+                                <p class="mb-4"><span class="text-verdigris-700 dark:text-verdigris-500">>></span>
+                                    Today I build <span class="text-cyan-700 dark:text-cyan-400">scalable, secure, production-grade pipelines</span> with Kafka, Flink, Spark, Airflow, dbt and Snowflake. Off the clock, I’m a Sudoku master and a serious chess player.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="lg:col-span-5 bg-white/50 dark:bg-slate-950/50 border border-slate-300 dark:border-slate-800 p-6 md:p-8 rounded relative overflow-hidden h-full flex flex-col">
+                        <div class="absolute top-0 right-0 p-4 opacity-10"><i data-lucide="git-branch"
+                                class="w-24 h-24 text-verdigris-700 dark:text-verdigris-500"></i></div>
+                        <h3
+                            class="text-lg font-bold text-slate-900 dark:text-white mb-8 flex items-center gap-2 relative z-10">
+                            <span class="w-1 h-5 bg-verdigris-700 dark:bg-verdigris-500 block mr-2"></span>
+                            PIPELINE_LINEAGE
+                        </h3>
+                        <div class="space-y-0 relative pl-2 ml-2 border-l-2 border-dashed border-slate-300 dark:border-slate-800 flex-grow"
+                            id="pipelineLineage"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: RESUME -->
+        <section id="resume"
+            class="scroll-mt-24 min-h-screen px-6 md:px-12 py-24 bg-slate-100 dark:bg-slate-950 relative overflow-hidden transition-colors duration-300">
+            <div
+                class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-verdigris-500/20 to-transparent">
+            </div>
+            <div class="max-w-7xl mx-auto relative z-10">
+                <div
+                    class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6 md:gap-0 reveal">
+                    <div>
+                        <span
+                            class="text-verdigris-700 dark:text-verdigris-500 font-mono text-xs uppercase tracking-[0.3em] mb-2 block">System_Logs</span>
+                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white tracking-tight">Career
+                            <span
+                                class="text-transparent bg-clip-text bg-gradient-to-r from-verdigris-700 dark:from-verdigris-400 to-cyan-600 dark:to-cyan-400">Timeline</span>
+                        </h2>
+                    </div>
+                    <div class="flex gap-4 w-full md:w-auto">
+                        <button onclick="downloadResume()"
+                            class="flex items-center justify-center w-full md:w-auto gap-2 px-4 py-2 border border-verdigris-600 dark:border-verdigris-500 bg-verdigris-500/10 text-verdigris-800 dark:text-verdigris-400 hover:bg-verdigris-700 dark:hover:bg-verdigris-500 hover:text-white dark:hover:text-slate-950 transition-all font-mono text-xs uppercase tracking-wider group shadow-[0_0_15px_rgba(45,212,191,0.2)]">
+                            <i data-lucide="download" class="w-4 h-4"></i> Download_Resume
+                        </button>
+                        <button onclick="window.print()"
+                            class="hidden md:flex items-center gap-2 px-4 py-2 border border-slate-300 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-verdigris-700 dark:hover:text-verdigris-400 hover:border-verdigris-500/50 transition-all font-mono text-xs uppercase tracking-wider group bg-white/50 dark:bg-slate-900/50">
+                            <i data-lucide="printer" class="w-4 h-4"></i> Export_Log
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                    <div class="lg:col-span-4 space-y-8 reveal">
+                        <div class="hud-border p-6 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm">
+                            <div class="hud-corner hc-tl"></div>
+                            <div class="hud-corner hc-tr"></div>
+                            <div class="hud-corner hc-bl"></div>
+                            <div class="hud-corner hc-br"></div>
+                            <h3
+                                class="text-slate-900 dark:text-white font-bold uppercase tracking-widest text-sm mb-6 flex items-center gap-2">
+                                <i data-lucide="user" class="w-4 h-4 text-verdigris-700 dark:text-verdigris-500"></i>
+                                Personnel_Data
+                            </h3>
+                            <div class="space-y-4 font-mono text-xs text-slate-600 dark:text-slate-400">
+                                <div class="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+                                    <span>Name</span><span class="text-slate-800 dark:text-slate-200">Macphalen L. Oduor</span>
+                                </div>
+                                <div class="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+                                    <span>University</span><span class="text-slate-800 dark:text-slate-200">JKUAT</span>
+                                </div>
+                                <div class="flex justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+                                    <span>Degree</span><span class="text-verdigris-700 dark:text-verdigris-400">B.Sc.
+                                        Business Computing</span>
+                                </div>
+                                <div class="flex justify-between"><span>Focus</span><span
+                                        class="text-slate-800 dark:text-slate-200 text-right">Streaming &amp; Orchestration<br>Warehousing &amp; ELT</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-8 reveal delay-100">
+                        <div class="relative pl-8 border-l border-slate-300 dark:border-slate-800 space-y-12"
+                            id="resumeList">
+                            <!-- Injected -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: BLOG -->
+        <section id="blog"
+            class="scroll-mt-24 min-h-screen px-6 md:px-12 py-24 bg-gradient-to-b from-slate-100 dark:from-slate-950 to-slate-200 dark:to-slate-900 relative border-t border-slate-300 dark:border-slate-900 transition-colors duration-300">
+            <div class="max-w-7xl mx-auto relative z-10">
+                <div
+                    class="mb-12 flex flex-col md:flex-row items-end justify-between border-b border-slate-300 dark:border-slate-800/60 pb-6 gap-6 reveal">
+                    <div>
+                        <span
+                            class="text-verdigris-700 dark:text-verdigris-500 font-mono text-xs uppercase tracking-[0.3em] mb-2 block animate-pulse">Neural_Link
+                            // Archives</span>
+                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white tracking-tight">
+                            Knowledge <span
+                                class="text-transparent bg-clip-text bg-gradient-to-r from-verdigris-700 dark:from-verdigris-400 to-cyan-600 dark:to-cyan-400">Base</span>
+                        </h2>
+                    </div>
+                    <div class="flex flex-wrap gap-2" id="blogFilterContainer"></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="blogGrid"></div>
+            </div>
+        </section>
+
+        <!-- SECTION: CONTACT -->
+        <section id="contact"
+            class="scroll-mt-24 min-h-screen px-6 md:px-12 py-24 flex flex-col justify-center border-t border-slate-300 dark:border-slate-900 bg-slate-100 dark:bg-slate-950 transition-colors duration-300">
+            <div class="max-w-5xl mx-auto w-full">
+                <div class="mb-16 text-center reveal">
+                    <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4 tracking-tight">Open
+                        <span class="text-verdigris-700 dark:text-verdigris-400">Channel</span>
+                    </h2>
+                    <p class="text-slate-500 dark:text-slate-500 font-mono text-xs uppercase tracking-widest">Secure
+                        Transmission Protocol:
+                        Enabled</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-12 items-start reveal">
+                    <div class="space-y-6">
+                        <div
+                            class="p-6 bg-white/40 dark:bg-slate-900/40 border border-slate-300 dark:border-slate-800 rounded-lg hover:border-verdigris-500/30 transition-all group">
+                            <h3 class="text-slate-400 font-mono text-xs uppercase tracking-widest mb-4">
+                                Communication_Link</h3>
+                            <a href="mailto:mac0duor0fficial@gmail.com" class="flex items-center gap-4">
+                                <div
+                                    class="w-12 h-12 rounded-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 group-hover:text-verdigris-700 dark:group-hover:text-verdigris-400 group-hover:border-verdigris-500 transition-all">
+                                    <i data-lucide="mail" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <div
+                                        class="text-slate-800 dark:text-white font-bold text-lg group-hover:text-verdigris-700 dark:group-hover:text-verdigris-400 transition-colors">
+                                        mac0duor0fficial@gmail.com</div>
+                                    <div class="text-slate-500 dark:text-slate-600 text-xs font-mono">Best for project enquiries
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div
+                            class="p-6 bg-white/40 dark:bg-slate-900/40 border border-slate-300 dark:border-slate-800 rounded-lg hover:border-blue-500/30 transition-all group">
+                            <h3 class="text-slate-400 font-mono text-xs uppercase tracking-widest mb-4">Network_Node
+                            </h3>
+                            <a href="https://www.linkedin.com/in/macphalen-oduor-9211643ab" target="_blank" rel="noopener" class="flex items-center gap-4">
+                                <div
+                                    class="w-12 h-12 rounded-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:border-blue-500 transition-all">
+                                    <i data-lucide="linkedin" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <div
+                                        class="text-slate-800 dark:text-white font-bold text-lg group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                        LinkedIn Profile</div>
+                                    <div class="text-slate-500 dark:text-slate-600 text-xs font-mono">Connect / Follow
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    <div class="p-6 bg-white/40 dark:bg-slate-900/40 border border-slate-300 dark:border-slate-800 rounded-lg hover:border-verdigris-500/30 transition-all group">
+                            <h3 class="text-slate-400 font-mono text-xs uppercase tracking-widest mb-4">Source_Repository</h3>
+                            <a href="https://github.com/mac0duor0fficial-1028" target="_blank" rel="noopener" class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 group-hover:text-verdigris-700 dark:group-hover:text-verdigris-400 transition-colors"><i data-lucide="github" class="w-5 h-5"></i></div>
+                                <div>
+                                    <div class="text-slate-800 dark:text-white font-bold text-lg group-hover:text-verdigris-700 dark:group-hover:text-verdigris-400 transition-colors">mac0duor0fficial-1028</div>
+                                    <div class="text-slate-500 dark:text-slate-600 text-xs font-mono">26 public repositories</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <form id="contactForm"
+                        class="bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800 p-1 shadow-2xl relative overflow-hidden group rounded-lg">
+                        <div
+                            class="bg-slate-100 dark:bg-slate-900 p-2 flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 mb-4">
+                            <div class="w-2.5 h-2.5 rounded-full bg-red-500/50"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-green-500/50"></div>
+                            <span class="ml-2 font-mono text-[10px] text-slate-500">msg_relay.exe</span>
+                        </div>
+                        <div class="p-6 space-y-5 relative z-10">
+                            <div><label
+                                    class="text-[10px] uppercase font-bold text-verdigris-700 dark:text-verdigris-500 tracking-widest mb-1 block font-mono">>
+                                    SET SENDER_ID</label><input type="text" required
+                                    class="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 p-3 text-slate-900 dark:text-white text-sm focus:border-verdigris-500 focus:outline-none focus:bg-white dark:focus:bg-slate-900 font-mono placeholder-slate-500 dark:placeholder-slate-700 transition-all"
+                                    placeholder="Enter Name..."></div>
+                            <div><label
+                                    class="text-[10px] uppercase font-bold text-verdigris-700 dark:text-verdigris-500 tracking-widest mb-1 block font-mono">>
+                                    SET REPLY_ADDR</label><input type="email" required
+                                    class="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 p-3 text-slate-900 dark:text-white text-sm focus:border-verdigris-500 focus:outline-none focus:bg-white dark:focus:bg-slate-900 font-mono placeholder-slate-500 dark:placeholder-slate-700 transition-all"
+                                    placeholder="Enter Email..."></div>
+                            <div><label
+                                    class="text-[10px] uppercase font-bold text-verdigris-700 dark:text-verdigris-500 tracking-widest mb-1 block font-mono">>
+                                    APPEND PAYLOAD</label><textarea rows="4" required
+                                    class="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 p-3 text-slate-900 dark:text-white text-sm focus:border-verdigris-500 focus:outline-none focus:bg-white dark:focus:bg-slate-900 font-mono placeholder-slate-500 dark:placeholder-slate-700 transition-all"
+                                    placeholder="Type message here..."></textarea></div>
+                            <button type="submit"
+                                class="w-full bg-verdigris-600/10 hover:bg-verdigris-600/20 text-verdigris-800 dark:text-verdigris-400 border border-verdigris-500/50 font-bold py-3 uppercase tracking-widest text-xs transition-all flex justify-center gap-2 items-center group font-mono mt-4">
+                                <span class="group-hover:animate-pulse">EXECUTE_TRANSMISSION</span> <i
+                                    data-lucide="send" class="w-3 h-3"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer
+        class="border-t border-slate-300 dark:border-slate-900 py-6 bg-slate-200 dark:bg-slate-950 no-print transition-colors duration-300">
+        <div
+            class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-mono text-slate-500 dark:text-slate-600">
+            <div>SYSTEM STATUS: <span class="text-verdigris-700 dark:text-verdigris-500">OPEN TO WORK</span> // BASE: NAIROBI, KE
+            </div>
+            <div>© 2026 MACPHALEN L. ODUOR // DATA ENGINEERING PORTFOLIO</div>
+        </div>
+    </footer>
+
+    <!-- Project Modal -->
+    <div id="projectModal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-slate-950/95 backdrop-blur-md transition-opacity" onclick="closeModal()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div
+                class="bg-white dark:bg-slate-950 w-full max-w-6xl max-h-[90vh] overflow-y-auto shadow-2xl animate-slide-up relative flex flex-col border border-slate-200 dark:border-slate-800 rounded-lg">
+                <div
+                    class="h-8 bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 sticky top-0 z-20">
+                    <div class="flex items-center gap-2">
+                        <div class="flex gap-1.5">
+                            <div class="w-2.5 h-2.5 rounded-full bg-red-500/20 border border-red-500/50"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/20 border border-yellow-500/50"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-green-500/20 border border-green-500/50"></div>
+                        </div>
+                        <span
+                            class="text-[10px] font-mono text-slate-500 uppercase tracking-widest ml-2">PROJECT_LOG.JSON</span>
+                    </div>
+                    <button onclick="closeModal()"
+                        class="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"><i
+                            data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+                <div id="modalContent" class="p-0"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA ---
+        const art = (a, b, s) => {
+            const ys = [0, 1, 2, 3, 4].map(i => 150 + ((i * s * 47) % 200));
+            let n = '';
+            ys.forEach((y, i) => {
+                const x = 100 + i * 150;
+                if (i < 4) n += `<line x1='${x}' y1='${y}' x2='${x + 150}' y2='${ys[i + 1]}' stroke='rgba(255,255,255,.35)' stroke-width='2'/>`;
+                n += `<circle cx='${x}' cy='${y}' r='16' fill='rgba(255,255,255,.18)' stroke='rgba(255,255,255,.65)' stroke-width='2'/>`;
+            });
+            return 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='${a}'/><stop offset='1' stop-color='${b}'/></linearGradient></defs><rect width='800' height='500' fill='url(#g)'/>${n}</svg>`);
+        };
+        const GH = "https://github.com/mac0duor0fficial-1028";
+
+        const HERO_DATA = { typingText: ["Pipeline_Architect", "Streaming_Engineer", "Warehouse_Builder"] };
+
+        const TECH_STACK = {
+            "Streaming & Orchestration": ["Apache Kafka", "Apache Flink", "Spark Streaming", "Airflow"],
+            "Storage & Warehousing": ["PostgreSQL", "Snowflake", "Cassandra", "DuckDB"],
+            "Transform & Analytics": ["dbt", "Python (Pandas, Polars)", "SQL", "Power BI"],
+            "Cloud & Tooling": ["AWS", "Cloudflare R2", "Docker", "Git"]
+        };
+
+        const PIPELINE_LINEAGE = [
+            { year: "01 // INGEST", title: "Sources", desc: "Kraken trades, farm sensors, POS CSVs and World Bank price data." },
+            { year: "02 // ORCHESTRATE", title: "Schedule & Retry", desc: "Airflow DAGs with one task per stage, so every step has its own logs." },
+            { year: "03 // STREAM", title: "Process in Motion", desc: "Kafka, Flink and Spark Structured Streaming with event-time windows." },
+            { year: "04 // TRANSFORM", title: "Clean & Model", desc: "dbt, pandas and SQL layers: bronze, silver, gold and star schemas." },
+            { year: "05 // SERVE", title: "Trusted Assets", desc: "PostgreSQL, Cassandra and Snowflake feeding dashboards and APIs." }
+        ];
+
+        const PROJECTS = [
+            {
+                id: 1, category: "Streaming", title: "Crypto Market Data Pipeline", status: "PUBLIC", tech: ["Airflow", "Kafka", "Spark", "Cassandra", "PostgreSQL"],
+                desc: "Live Kraken trades streamed through Kafka, crunched by Spark and served per minute from Cassandra.",
+                image: art('#042f2e', '#0e7490', 3), repo: GH + "/Crypto_Market_Data_Pipeline",
+                details: { situation: "Live trade data arrives continuously, and re-runs or restarts must never create duplicate records.", task: "Build a real-time pipeline from the Kraken API to a serving layer for dashboards and APIs.", action: ["Airflow fetches and validates trades every minute into PostgreSQL.", "Kafka (Avro + Schema Registry) streams trades out of Postgres.", "Spark Structured Streaming computes 1-minute average price, VWAP, volatility and volume.", "Cassandra serves the results, exposed through a REST API."], result: "Restarts never duplicate data: Postgres ignores repeated trade IDs, Spark drops duplicate events, Cassandra overwrites by key." }
+            },
+            {
+                id: 2, category: "Streaming", title: "AgriStream Realtime Analytics", status: "PUBLIC", tech: ["Kafka", "PyFlink", "PostgreSQL", "Docker"],
+                desc: "Farm sensor readings aggregated in 1-minute event-time windows per field, fully containerized.",
+                image: art('#134e4a', '#155e75', 5), repo: GH + "/Agristream_Realtime_Analytics_Pipeline",
+                details: { situation: "Rural connectivity means sensor packets (soil moisture, temperature, humidity, pH) arrive late or out of order.", task: "Compute reliable per-field aggregates that dashboards, APIs and alerts can query with plain SQL.", action: ["Kafka decouples sensors from processing and allows replay.", "PyFlink uses event time and watermarks for 1-minute tumbling windows.", "A JDBC sink upserts results into an indexed PostgreSQL table.", "Docker Compose runs the whole stack with one command."], result: "Replays and restarts are safe thanks to upserts; the default load yields about 120 readings per field per window." }
+            },
+            {
+                id: 3, category: "Orchestration", title: "Kenya Food Price Data Platform", status: "PUBLIC", tech: ["Airflow", "pandas", "PostgreSQL", "Power BI"],
+                desc: "Reproducible ETL for World Bank food price data into a star schema, with lineage and quality gates.",
+                image: art('#0f172a', '#0f766e', 7), repo: GH + "/Kenya_Food_Price_Data_Platform",
+                details: { situation: "Sub-national food price and inflation data is fragile, and policymakers need numbers they can trust.", task: "Automate ingestion, transformation and loading of monthly prices by product and market across Kenya.", action: ["One Airflow DAG with 7 tasks; pandas and Parquet for staging.", "PostgreSQL star schema: dim_date, dim_market, dim_product, fact_food_price.", "Rule-driven data-quality checks where error-severity failures block publishing.", "Power BI dashboard on top for analysts."], result: "Every run records the source file SHA-256, git commit, lockfile hash and row counts; each fact row stores its run_id and source_row." }
+            },
+            {
+                id: 4, category: "Orchestration", title: "Weather-to-Email Alert Agent", status: "PUBLIC", tech: ["Airflow", "Python", "Open-Meteo", "SMTP"],
+                desc: "Airflow pipeline that checks rain, heat and wind thresholds and emails an alert when one is crossed.",
+                image: art('#164e63', '#134e4a', 2), repo: GH + "/Weather-to-Email_Alert_Agent",
+                details: { situation: "Weather risks need to reach people before they matter, without anyone checking a forecast manually.", task: "Build a small, modular alerting pipeline that is easy to configure and test.", action: ["Fetch daily forecasts from Open-Meteo (no API key needed).", "Pure-logic rules module checks configurable rain, heat and wind thresholds.", "Notifier sends the email over SMTP.", "Each stage is its own Airflow task with separate retries and logs."], result: "Swap the weather API or the notification channel without touching the rest, and test the rules with no network or inbox." }
+            },
+            {
+                id: 5, category: "Cloud ELT", title: "ShelfPulse Retail Sales Pipeline", status: "PUBLIC", tech: ["Cloudflare R2", "boto3", "Snowflake", "dbt"],
+                desc: "Daily POS CSVs land in R2, load into Snowflake and become trusted revenue tables with dbt.",
+                image: art('#042f2e', '#1e3a8a', 4), repo: GH + "/ShelfPulse_Retail_Sales_Pipeline",
+                details: { situation: "A Kenyan supermarket chain exports one CSV per store per day, and loading them by hand does not scale.", task: "Pick up new files automatically and build daily revenue by store and product category.", action: ["A boto3 selector lists R2 and loads only files not already in RAW.", "Snowflake external stage reads straight from R2; RAW keeps everything as text.", "dbt types, deduplicates and aggregates into the ANALYTICS schema.", "dbt tests: unique and not_null keys plus a freshness check."], result: "Reruns are safe because _source_file acts as both idempotency key and lineage." }
+            },
+            {
+                id: 6, category: "Warehousing", title: "Retail Data Warehouse", status: "PUBLIC", tech: ["PostgreSQL", "Aiven", "SQL", "Star Schema"],
+                desc: "Bronze, silver and gold warehouse in PostgreSQL on Aiven, from raw CSV ingestion to analytics-ready views.",
+                image: art('#0f172a', '#115e59', 6), repo: GH + "/Retail_Data_Warehouse",
+                details: { situation: "Raw CRM and ERP exports are inconsistent and unusable for reporting as they arrive.", task: "Design a layered warehouse covering ingestion, ETL, modeling and business-ready analytics.", action: ["Bronze: raw batch loads from source CSVs.", "Silver: cleansing, standardization, normalization and enrichment.", "Gold: integrated views with star-schema and aggregated models.", "SQL scripts, tests and docs organized by layer."], result: "Analytics-ready gold views for BI tools, ad-hoc SQL and machine learning." }
+            }
+        ];
+
+        const EXPERIENCE = [
+            { role: "Data Engineer (Independent Projects)", company: "GitHub // mac0duor0fficial-1028", time: "ONGOING", desc: "Designing and shipping end-to-end pipelines across streaming, orchestration, warehousing and cloud ELT: Kafka, Flink, Spark, Airflow, dbt, PostgreSQL, Snowflake and Cassandra. 26 repositories, six flagship builds." },
+            { role: "B.Sc. Business Computing", company: "Jomo Kenyatta University of Agriculture and Technology (JKUAT)", time: "GRADUATE", desc: "Foundation in computing and business that grew from data analytics into data infrastructure." }
+        ];
+
+        const NOTE = (id, category, title, excerpt, repo) => ({ id, category, title, excerpt, source: repo.replace(/_/g, ' '), tag: "DESIGN NOTE", link: GH + "/" + repo });
+        const BLOG_POSTS = [
+            NOTE("LOG_01", "Streaming", "Idempotent at every hop", "Postgres ignores repeated trade IDs, Spark drops duplicates and Cassandra overwrites by key, so restarts are harmless.", "Crypto_Market_Data_Pipeline"),
+            NOTE("LOG_02", "Streaming", "Event time beats arrival time", "Watermarks let late, out-of-order sensor packets land in the right 1-minute window.", "Agristream_Realtime_Analytics_Pipeline"),
+            NOTE("LOG_03", "Streaming", "Why Kafka sits in the middle", "It decouples producers from processing, absorbs bursts and lets you replay history.", "Agristream_Realtime_Analytics_Pipeline"),
+            NOTE("LOG_04", "Data Quality", "Lineage on every run", "Source checksum, git commit, lockfile hash and row counts recorded for each pipeline execution.", "Kenya_Food_Price_Data_Platform"),
+            NOTE("LOG_05", "Data Quality", "Let bad data fail loudly", "Error-severity quality rules block publishing, and a grain check catches duplicate facts early.", "Kenya_Food_Price_Data_Platform"),
+            NOTE("LOG_06", "Orchestration", "One task per stage", "Separate Airflow tasks give every stage its own retries and logs, with pure-logic rules kept testable.", "Weather-to-Email_Alert_Agent"),
+            NOTE("LOG_07", "Orchestration", "Pinning Airflow’s dependencies", "Airflow 2.10 pins SQLAlchemy 1.4, so the psycopg2 driver is the safe choice over psycopg 3.", "Kenya_Food_Price_Data_Platform"),
+            NOTE("LOG_08", "Cloud ELT", "Source file as idempotency key", "One column doubles as lineage and makes reruns safe when loading R2 files into Snowflake.", "ShelfPulse_Retail_Sales_Pipeline"),
+            NOTE("LOG_09", "Cloud ELT", "Land raw as text, type in dbt", "RAW keeps everything as text plus load metadata; dbt types, dedupes and tests downstream.", "ShelfPulse_Retail_Sales_Pipeline"),
+            NOTE("LOG_10", "Warehousing", "Bronze, silver, gold", "Raw, cleaned and business-ready layers keep a PostgreSQL warehouse scalable and maintainable.", "Retail_Data_Warehouse")
+        ];
+
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check for saved theme preference
+            let saved = null; try { saved = localStorage.getItem('theme'); } catch (e) { }
+            const wantsLight = saved ? saved === 'light' : window.matchMedia('(prefers-color-scheme: light)').matches;
+            document.documentElement.classList.toggle('dark', !wantsLight);
+
+            simulateLoader();
+            initTechStack();
+            renderProjects('All');
+            renderResume();
+            renderLineage();
+            renderBlog('All');
+            initContactForm();
+            setupScrollSpy();
+            setupScrollReveal();
+
+            // Mobile Menu Logic
+            const mm = document.getElementById('mobileMenu');
+            const navLinksContainer = document.getElementById('mobileNavLinks');
+
+            // Build Mobile Links
+            ['home', 'projects', 'about', 'resume', 'blog', 'contact'].forEach((id, i) => {
+                const a = document.createElement('a');
+                a.href = `#${id}`;
+                a.className = "group flex items-center justify-between p-4 border border-slate-300 dark:border-slate-800 hover:border-verdigris-500/50 bg-slate-50 dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-800/80 transition-all rounded-sm relative overflow-hidden";
+                a.onclick = (e) => { e.preventDefault(); smoothScroll(e, id); };
+                a.innerHTML = `<div class="absolute inset-0 bg-verdigris-500/5 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300"></div><span class="text-lg font-mono text-slate-700 dark:text-slate-300 group-hover:text-verdigris-700 dark:group-hover:text-verdigris-400 tracking-widest relative z-10 uppercase">${id}</span><span class="text-slate-400 dark:text-slate-600 group-hover:text-verdigris-500 font-mono text-xs relative z-10">0${i + 1} //</span>`;
+                navLinksContainer.appendChild(a);
+            });
+
+            document.getElementById('mobileMenuBtn').onclick = () => {
+                mm.classList.remove('opacity-0', 'pointer-events-none', 'invisible');
+                mm.classList.add('opacity-100', 'pointer-events-auto', 'visible');
+            };
+            document.getElementById('closeMenuBtn').onclick = () => {
+                mm.classList.add('opacity-0', 'pointer-events-none', 'invisible');
+                mm.classList.remove('opacity-100', 'pointer-events-auto', 'visible');
+            };
+
+            // Navbar Scroll Effect
+            window.addEventListener('scroll', () => {
+                const nav = document.getElementById('navbar');
+                if (window.scrollY > 20) {
+                    nav.classList.add('scrolled');
+                } else {
+                    nav.classList.remove('scrolled');
+                }
+            });
+
+            lucide.createIcons();
+        });
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+
+            // Save preference
+            if (html.classList.contains('dark')) {
+                try { localStorage.setItem('theme', 'dark'); } catch (e) { }
+            } else {
+                try { localStorage.setItem('theme', 'light'); } catch (e) { }
+            }
+
+            // Re-render certain components if needed (icons mostly handled by CSS)
+            // Force redraw of canvas with new colors
+            initBackground();
+        }
+
+        function logEvent(action, target) {
+            const logContainer = document.getElementById('systemLog');
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+            const entry = document.createElement('div');
+            entry.className = "flex gap-2 animate-fade-in";
+            entry.innerHTML = `<span class="text-verdigris-700 dark:text-verdigris-500">&gt;</span> <span class="text-slate-400 dark:text-slate-500">[${time}]</span> <span class="text-verdigris-700 dark:text-verdigris-400">${action}:</span> <span class="text-slate-600 dark:text-slate-300">${target}</span>`;
+            logContainer.appendChild(entry);
+            if (logContainer.children.length > 6) logContainer.removeChild(logContainer.firstChild);
+        }
+
+        function simulateLoader() {
+            const loaderText = document.getElementById('loaderText');
+            const loaderProgress = document.getElementById('loaderProgress');
+            const loader = document.getElementById('loader');
+            const steps = ["Mounting volumes...", "Decrypting portfolio...", "System Online."];
+            let i = 0, p = 0;
+            const interval = setInterval(() => { i++; if (i < steps.length) loaderText.innerText = steps[i]; }, 600);
+            const pInt = setInterval(() => { p += Math.random() * 10; if (p > 100) p = 100; loaderProgress.innerText = Math.floor(p) + '%'; if (p === 100) clearInterval(pInt); }, 100);
+            setTimeout(() => { clearInterval(interval); loader.style.opacity = '0'; setTimeout(() => { loader.style.display = 'none'; typeWriter(); initBackground(); }, 500); }, 2800);
+        }
+
+        function typeWriter() {
+            const el = document.getElementById("typingText");
+            let txtIdx = 0, charIdx = 0, isDel = false;
+            function type() {
+                const full = HERO_DATA.typingText[txtIdx % HERO_DATA.typingText.length];
+                el.innerText = isDel ? full.substring(0, charIdx--) : full.substring(0, charIdx++);
+                let speed = isDel ? 50 : 100;
+                if (!isDel && charIdx === full.length + 1) { isDel = true; speed = 2000; }
+                else if (isDel && charIdx === 0) { isDel = false; txtIdx++; speed = 500; }
+                setTimeout(type, speed);
+            }
+            type();
+        }
+
+        let animationFrameId;
+
+        function initBackground() {
+            const canvas = document.getElementById('bgCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let w, h, particles = [];
+
+            const isDark = document.documentElement.classList.contains('dark');
+            // Light Mode: Teal 700 (#0f766e) for better visibility, Dark Mode: Teal 400 (#2dd4bf)
+            const particleColor = isDark ? '#2dd4bf' : '#0f766e';
+            // Line Color (rgba) - using darker base for light mode
+            const lineColorBase = isDark ? '34,211,238' : '15,118,110';
+
+            const resize = () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; initP(); };
+            const initP = () => { particles = []; for (let i = 0; i < 60; i++) particles.push({ x: Math.random() * w, y: Math.random() * h, vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3 }); };
+
+            // Remove previous listener to avoid stacking
+            window.removeEventListener('resize', resize);
+            window.addEventListener('resize', resize);
+            resize();
+
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+
+            function anim() {
+                ctx.clearRect(0, 0, w, h);
+                particles.forEach((p, i) => {
+                    p.x += p.vx; p.y += p.vy;
+                    if (p.x < 0 || p.x > w) p.vx *= -1; if (p.y < 0 || p.y > h) p.vy *= -1;
+                    ctx.fillStyle = particleColor; ctx.beginPath(); ctx.arc(p.x, p.y, 1, 0, Math.PI * 2); ctx.fill();
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const p2 = particles[j];
+                        const d = Math.hypot(p.x - p2.x, p.y - p2.y);
+                        if (d < 120) { ctx.strokeStyle = `rgba(${lineColorBase},${0.15 * (1 - d / 120)})`; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke(); }
+                    }
+                });
+                animationFrameId = requestAnimationFrame(anim);
+            }
+            anim();
+        }
+
+        function initTechStack() {
+            const c = document.getElementById('techStackContainer');
+            c.innerHTML = '';
+            Object.entries(TECH_STACK).forEach(([cat, tools]) => {
+                c.innerHTML += `<div><h4 class="text-slate-500 dark:text-slate-400 font-bold mb-3 uppercase text-[10px] tracking-widest font-mono border-b border-slate-300 dark:border-slate-800 pb-1 w-fit">${cat}</h4><div class="space-y-2">${tools.map(t => `<div class="flex items-center gap-2 text-slate-600 dark:text-slate-500 hover:text-verdigris-700 dark:hover:text-verdigris-400 transition-colors group cursor-default"><span class="w-1 h-1 bg-slate-400 dark:bg-slate-700 group-hover:bg-verdigris-700 dark:group-hover:bg-verdigris-500 rounded-sm transition-colors"></span>${t}</div>`).join('')}</div></div>`;
+            });
+        }
+
+        function renderProjects(filter) {
+            const grid = document.getElementById('projectsGrid');
+            const filters = document.getElementById('filterContainer');
+            const cats = ['All', ...new Set(PROJECTS.map(p => p.category))];
+            filters.innerHTML = cats.map(c => `<button onclick="renderProjects('${c}')" class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider transition-all skew-x-[-10deg] border ${filter === c ? 'bg-verdigris-700 dark:bg-verdigris-500 text-white dark:text-slate-900 border-verdigris-700 dark:border-verdigris-500 shadow-[0_0_15px_rgba(45,212,191,0.3)]' : 'bg-transparent text-slate-500 dark:text-slate-500 border-slate-300 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white hover:border-slate-500'}">${c}</button>`).join('');
+
+            grid.innerHTML = PROJECTS.filter(p => filter === 'All' || p.category === filter).map((p, idx) => `
+                <div onclick="openModal(${p.id})" style="transition-delay: ${idx * 100}ms" class="reveal relative group h-96 overflow-hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-verdigris-500/50 transition-all duration-500 holo-border shadow-lg hover:shadow-[0_0_30px_rgba(45,212,191,0.15)] cursor-pointer">
+                    <div class="absolute inset-0"><img src="${p.image}" class="w-full h-full object-cover opacity-60 group-hover:opacity-40 group-hover:scale-110 transition-all duration-700 filter contrast-125" /><div class="absolute inset-0 bg-gradient-to-t from-slate-100 dark:from-slate-950 via-slate-100/80 dark:via-slate-950/80 to-transparent"></div></div>
+                    <div class="relative z-10 p-6 flex flex-col h-full">
+                        <div class="flex justify-between items-center mb-4"><span class="px-3 py-1 text-[10px] font-bold tracking-widest text-verdigris-800 dark:text-verdigris-300 bg-verdigris-100 dark:bg-verdigris-900/20 border border-verdigris-500/20 uppercase backdrop-blur-md rounded-sm">${p.category}</span><div class="w-1.5 h-1.5 rounded-full ${p.status === 'LIVE' ? 'bg-verdigris-600 dark:bg-verdigris-400 shadow-[0_0_8px_rgba(45,212,191,0.8)]' : 'bg-slate-400 dark:bg-slate-600'} animate-pulse"></div></div>
+                        <div class="mt-auto mb-4"><h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2 leading-tight group-hover:text-verdigris-700 dark:group-hover:text-verdigris-400 transition-colors drop-shadow-md">${p.title}</h3><p class="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">${p.desc}</p></div>
+                        <div class="border-t border-slate-200 dark:border-slate-800/50 pt-4 flex flex-col gap-4">
+                            <div class="flex flex-wrap gap-2">${p.tech.slice(0, 3).map(t => `<span class="px-2 py-1 text-[9px] font-mono font-bold text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-700 bg-white/50 dark:bg-slate-950/50 uppercase tracking-wide backdrop-blur-sm">${t}</span>`).join('')}</div>
+                            <button class="w-full py-3 bg-slate-100/80 dark:bg-slate-800/80 hover:bg-verdigris-700 hover:text-white dark:hover:bg-verdigris-600 dark:hover:text-slate-950 text-slate-700 dark:text-slate-300 font-bold uppercase text-xs tracking-widest transition-all duration-300 flex items-center justify-center gap-2 border border-slate-200 dark:border-slate-700 group-hover:border-verdigris-500/50 backdrop-blur-sm group/btn"><i data-lucide="terminal" class="w-3 h-3 group-hover/btn:animate-bounce"></i> View Project</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+            setupScrollReveal();
+        }
+
+        function openModal(id) {
+            const p = PROJECTS.find(x => x.id === id);
+            logEvent('ACCESS', `PROJECT_${id}`);
+            const m = document.getElementById('projectModal');
+            document.getElementById('modalContent').innerHTML = `
+                <div class="relative bg-white dark:bg-slate-950 flex flex-col">
+                    <div class="relative h-64 w-full overflow-hidden border-b border-slate-200 dark:border-slate-800">
+                        <div class="absolute inset-0 bg-gradient-to-t from-white dark:from-slate-950 to-transparent z-10"></div>
+                        <img src="${p.image}" class="w-full h-full object-cover opacity-50 filter grayscale contrast-125" />
+                        <div class="absolute bottom-0 left-0 p-8 z-20 w-full">
+                            <div class="flex items-center gap-3 mb-2"><span class="px-2 py-0.5 bg-verdigris-100 dark:bg-verdigris-500/20 border border-verdigris-500/50 text-verdigris-800 dark:text-verdigris-300 text-[10px] font-mono uppercase tracking-wider backdrop-blur-md rounded">${p.category}</span><span class="px-2 py-0.5 bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-[10px] font-mono uppercase tracking-wider backdrop-blur-md rounded flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full ${p.status === 'LIVE' ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse"></span> ${p.status}</span></div>
+                            <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white tracking-tight drop-shadow-lg">${p.title}</h2>
+                        </div>
+                    </div>
+                    <div class="p-8 grid lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2 space-y-8">
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div class="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 p-5 rounded group hover:border-red-500/30 transition-colors"><h3 class="text-red-600 dark:text-red-400 font-bold font-mono text-xs uppercase tracking-widest mb-3 flex items-center gap-2"><span class="w-1 h-4 bg-red-600 dark:bg-red-500 block"></span> Situation</h3><p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">${p.details.situation}</p></div>
+                                <div class="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 p-5 rounded group hover:border-blue-500/30 transition-colors"><h3 class="text-blue-600 dark:text-blue-400 font-bold font-mono text-xs uppercase tracking-widest mb-3 flex items-center gap-2"><span class="w-1 h-4 bg-blue-600 dark:bg-blue-500 block"></span> Task</h3><p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">${p.details.task}</p></div>
+                            </div>
+                            <div class="bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded p-6 relative"><div class="absolute -left-1 top-6 w-1 h-12 bg-verdigris-600 dark:bg-verdigris-500"></div><h3 class="text-slate-900 dark:text-white font-bold font-mono text-xs uppercase tracking-widest mb-4 flex items-center gap-2"><i data-lucide="terminal-square" class="w-4 h-4 text-verdigris-700 dark:text-verdigris-500"></i> Execution Protocol</h3><div class="space-y-3 font-mono text-xs md:text-sm">${p.details.action.map((s, i) => `<div class="flex gap-3 text-slate-500 dark:text-slate-400 items-start"><span class="text-slate-400 dark:text-slate-600">0${i + 1}</span><span class="text-verdigris-500/50">></span><span class="text-slate-700 dark:text-slate-300">${s}</span></div>`).join('')}<div class="flex gap-3 text-verdigris-500/50 items-start animate-pulse"><span>__</span><span>></span><span class="text-verdigris-700 dark:text-verdigris-500">PROTOCOL_COMPLETE</span></div></div></div>
+                        </div>
+                        <div class="space-y-6">
+                            <div class="bg-gradient-to-br from-verdigris-100 dark:from-verdigris-900/20 to-white dark:to-slate-900 border border-verdigris-500/30 p-6 rounded flex flex-col items-center justify-center text-center shadow-[0_0_30px_rgba(45,212,191,0.05)] relative overflow-hidden"><div class="absolute inset-0 bg-verdigris-500/5 animate-pulse-slow"></div><i data-lucide="zap" class="w-8 h-8 text-verdigris-700 dark:text-verdigris-400 mb-3 relative z-10"></i><span class="text-verdigris-700 dark:text-verdigris-400 font-mono text-[10px] uppercase tracking-widest mb-2 relative z-10">System Impact</span><h4 class="text-slate-900 dark:text-white font-bold text-lg leading-snug relative z-10">${p.details.result}</h4></div>
+                            <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded"><h3 class="text-slate-500 font-bold font-mono text-[10px] uppercase tracking-widest mb-3 border-b border-slate-200 dark:border-slate-800 pb-2">Module Dependencies</h3><div class="flex flex-wrap gap-2">${p.tech.map(t => `<span class="px-2 py-1 bg-white dark:bg-slate-950 text-[10px] text-slate-600 dark:text-slate-300 font-mono border border-slate-200 dark:border-slate-800 rounded flex items-center gap-1"><i data-lucide="cpu" class="w-3 h-3 text-slate-400 dark:text-slate-600"></i> ${t}</span>`).join('')}</div></div>
+                            <a href="${p.repo}" target="_blank" class="block w-full py-4 bg-slate-100 hover:bg-verdigris-400 text-slate-900 font-bold uppercase tracking-widest text-xs text-center transition-all hover:scale-[1.02] shadow-xl rounded group"><span class="flex items-center justify-center gap-2"><i data-lucide="github" class="w-4 h-4"></i> Access Source</span></a>
+                        </div>
+                    </div>
+                </div>
+            `;
+            m.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            lucide.createIcons();
+        }
+        function closeModal() { document.getElementById('projectModal').classList.add('hidden'); document.body.style.overflow = 'auto'; }
+
+        function renderResume() {
+            document.getElementById('resumeList').innerHTML = EXPERIENCE.map((e, i) => `
+                <div class="relative group">
+                    <div class="absolute -left-[37px] top-1 h-4 w-4 rounded-full bg-slate-100 dark:bg-slate-900 border-2 ${i === 0 ? 'border-verdigris-700 dark:border-verdigris-500 shadow-[0_0_10px_rgba(45,212,191,0.5)]' : 'border-slate-300 dark:border-slate-600'} group-hover:scale-125 transition-transform"></div>
+                    <div class="bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 p-6 hover:border-verdigris-500/30 transition-colors group-hover:bg-slate-50 dark:group-hover:bg-slate-900/80">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+                            <div><h3 class="text-xl font-bold text-slate-900 dark:text-white group-hover:text-verdigris-700 dark:group-hover:text-verdigris-400 transition-colors">${e.role}</h3><span class="text-cyan-700 dark:text-cyan-400 text-xs font-mono tracking-wider">${e.company}</span></div>
+                            <span class="mt-2 sm:mt-0 px-2 py-1 bg-verdigris-500/10 text-verdigris-800 dark:text-verdigris-400 border border-verdigris-500/20 text-[10px] font-mono">${e.time}</span>
+                        </div>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm mb-4">${e.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderLineage() {
+            const container = document.getElementById('pipelineLineage');
+            container.innerHTML = `<div class="relative pl-6 space-y-8 py-2">
+                 ${PIPELINE_LINEAGE.map((item, i) => `
+                    <div class="relative group">
+                        <span class="absolute -left-[31px] top-1.5 w-3 h-3 rounded-full bg-slate-100 dark:bg-slate-900 border-2 border-verdigris-700 dark:border-verdigris-500 group-hover:bg-verdigris-700 dark:group-hover:bg-verdigris-500 transition-colors shadow-[0_0_10px_rgba(45,212,191,0.3)]"></span>
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-mono text-verdigris-700 dark:text-verdigris-500 mb-1 block">${item.year}</span>
+                            <h4 class="text-slate-800 dark:text-slate-200 font-bold text-sm group-hover:text-verdigris-800 dark:group-hover:text-verdigris-400 transition-colors">${item.title}</h4>
+                            <p class="text-xs text-slate-600 dark:text-slate-500 mt-1">${item.desc}</p>
+                        </div>
+                    </div>
+                 `).join('')}
+             </div>`;
+        }
+
+        function renderBlog(filter) {
+            const grid = document.getElementById('blogGrid');
+            const filters = document.getElementById('blogFilterContainer');
+            const cats = ['All', ...new Set(BLOG_POSTS.map(p => p.category))];
+            filters.innerHTML = cats.map(c => `<button onclick="renderBlog('${c}')" class="px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider transition-all border rounded-sm ${filter === c ? 'bg-verdigris-100 dark:bg-verdigris-900/40 text-verdigris-800 dark:text-verdigris-400 border-verdigris-500/50' : 'bg-slate-100 dark:bg-slate-900/50 text-slate-500 dark:text-slate-500 border-slate-200 dark:border-slate-800 hover:text-slate-900 dark:hover:text-white hover:border-slate-400 dark:hover:border-slate-600'}">${c}</button>`).join('');
+            grid.innerHTML = BLOG_POSTS.filter(p => filter === 'All' || p.category === filter).map((p, i) => `
+                <div class="group relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-verdigris-500/50 transition-all duration-300 flex flex-col overflow-hidden hover:shadow-[0_0_20px_rgba(45,212,191,0.05)] rounded-lg reveal" style="transition-delay: ${i * 50}ms">
+                    <div class="absolute inset-0 tech-grid opacity-5 pointer-events-none"></div>
+                    <div class="p-5 flex flex-col h-full relative z-10">
+                        <div class="flex justify-between items-start mb-4"><span class="px-2 py-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-[9px] font-bold text-verdigris-700 dark:text-verdigris-500 uppercase tracking-widest rounded">${p.category}</span><span class="text-[9px] text-slate-400 dark:text-slate-500 font-mono">${p.source}</span></div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100 group-hover:text-verdigris-700 dark:group-hover:text-verdigris-400 transition-colors leading-tight mb-3 line-clamp-2">${p.title}</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-light mb-4 line-clamp-3">${p.excerpt}</p>
+                        <div class="mt-auto pt-4 border-t border-slate-200 dark:border-slate-800/50 flex items-center justify-between">
+                            <span class="text-[9px] text-slate-500 dark:text-slate-600 font-mono flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> ${p.tag}</span>
+                            <a href="${p.link}" target="_blank" class="flex items-center gap-1 text-[10px] font-bold text-slate-400 dark:text-slate-300 hover:text-verdigris-700 dark:hover:text-verdigris-400 transition-colors uppercase tracking-wider">View Repo <i data-lucide="external-link" class="w-3 h-3"></i></a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+            setupScrollReveal();
+        }
+
+        function initContactForm() {
+            const form = document.getElementById('contactForm');
+            form.onsubmit = (e) => {
+                e.preventDefault();
+                const [name, email, msg] = form.querySelectorAll('input, textarea');
+                const subject = encodeURIComponent('Portfolio enquiry from ' + name.value);
+                const body = encodeURIComponent(msg.value + '\n\n— ' + name.value + ' (' + email.value + ')');
+                logEvent('COMPOSE', 'MAIL_CLIENT');
+                window.location.href = 'mailto:mac0duor0fficial@gmail.com?subject=' + subject + '&body=' + body;
+                form.reset();
+            }
+        }
+
+        function setupScrollSpy() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        document.querySelectorAll('.nav-pill').forEach(link => {
+                            link.classList.remove('active');
+                            if (link.dataset.target === id) link.classList.add('active');
+                        });
+                        logEvent('NAVIGATE', id.toUpperCase());
+                    }
+                });
+            }, { rootMargin: "-45% 0px -45% 0px" });
+            document.querySelectorAll('section').forEach(section => observer.observe(section));
+        }
+
+        function setupScrollReveal() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(r => observer.observe(r));
+        }
+
+        function smoothScroll(e, id) {
+            e.preventDefault();
+            const el = document.getElementById(id);
+            if (el) { el.scrollIntoView({ behavior: 'smooth' }); document.getElementById('mobileMenu').classList.add('opacity-0', 'pointer-events-none', 'invisible'); document.getElementById('mobileMenu').classList.remove('opacity-100', 'pointer-events-auto', 'visible'); document.body.style.overflow = ''; }
+        }
+
+        function downloadResume() {
+            const bar = "=".repeat(60);
+            let c = `${bar}\nMACPHALEN L. ODUOR - DATA ENGINEER\n${bar}\n\n[CONTACT]\nEmail: mac0duor0fficial@gmail.com\nLocation: Nairobi, Kenya\nGitHub: ${GH}\nLinkedIn: https://www.linkedin.com/in/macphalen-oduor-9211643ab\n\n`;
+            c += `[SUMMARY]\nData engineer and JKUAT graduate (B.Sc. Business Computing) building scalable, secure,\nproduction-grade pipelines across streaming, orchestration, warehousing and cloud ELT.\n\n[TECHNICAL SKILLS]\n`;
+            Object.entries(TECH_STACK).forEach(([k, v]) => { c += `${k.padEnd(26)}: ${v.join(', ')}\n`; });
+            c += `\n[EXPERIENCE & EDUCATION]\n`;
+            EXPERIENCE.forEach(e => { c += `${e.time} | ${e.role}\n${e.company}\n> ${e.desc}\n\n`; });
+            c += `[KEY PROJECTS]\n`;
+            PROJECTS.forEach(p => { c += `* ${p.title} (${p.category})\n  Tech: ${p.tech.join(', ')}\n  Result: ${p.details.result}\n  ${p.repo}\n\n`; });
+            const url = URL.createObjectURL(new Blob([c], { type: 'text/plain' }));
+            const a = document.createElement('a'); a.href = url; a.download = "Macphalen_Oduor_Resume.txt";
+            document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+            logEvent('DOWNLOAD', 'RESUME_TXT');
+        }
+    </script>
+</body>
+
+</html>
